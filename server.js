@@ -49,6 +49,10 @@ app.use(require('connect-flash')());
     }
 );
 
+
+app.get('/', req, res){
+    console.log("Hey there")
+}
 // Passport Config
 require('./config/passport')(passport);
 // Passport Middleware
