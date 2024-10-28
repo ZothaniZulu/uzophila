@@ -51,7 +51,7 @@ app.use(require('connect-flash')());
 
 
 app.get('/', function(req, res){
-    console.log("Hello there")
+    
 }) 
 // Passport Config
 require('./config/passport')(passport);
