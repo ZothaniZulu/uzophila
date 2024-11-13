@@ -52,12 +52,86 @@ app.use(require('connect-flash')());
 
 app.get('/', function(req, res){
     
-}) 
+})
+
+
 // Passport Config
 require('./config/passport')(passport);
 // Passport Middleware
 app.use(passport.initialize(console.log("Passport initialized")));
 app.use(passport.session(console.log("Passport session on standby")));
+
+
+/* User Access routes */
+
+//Load login page
+app.get('/login', function(req, res){
+  let emailAddress = req.body.username;
+  let server_url = req.protocol + '://' + req.get('host');
+  res.render('users/login',{
+      title: 'Login',
+      emailAddress:emailAddress,
+      server_url:server_url
+  });
+});
+
+app.post('/login', function(req, res, next) {
+  let emailAddress = req.body.username;
+  let server_url = req.protocol + '://' + req.get('host');
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err) }
+    if (!user) {
+      req.flash('danger', 'Incorrect credentials, please try again.');
+      res.render('users/login',{
+        emailAddress:emailAddress,
+        server_url:server_url
+      });
+
+      console.log('Login failed');
+    }else{
+      req.logIn(user, function(err) {
+        if (err) {
+          console.log(err);
+          return;
+        }else{
+          res.redirect('/');
+        }
+      });
+    }
+  })(req, res, next);
+});
+
+//Logout
+app.get('/logout', function(req, res){
+  req.logout();
+  req.flash('success', 'You are logged out');
+  res.redirect('/login');
+});
+
+//Access Control
+function ensureAuthenticated(req, res, next){
+  if(req.isAuthenticated()){
+    return next();
+  } else {
+    res.redirect('/login');
+  }
+}
+
+/* End of User Access Routes */
+
+//Home page
+app.get('/', ensureAuthenticated, function(req, res){
+  User.findById(req.user._id, function(err, user){
+    if(err){
+      console.log(err);
+    }else{
+      res.render('home', {
+        user: user
+      }) 
+    }
+  });
+});
+
 
 // Start Server
 const PORT = process.env.PORT || 3000;
