@@ -1,0 +1,29 @@
+extends user_layout
+
+block content
+    br
+    div.row
+        div.col-sm-12.col-md-12.col-lg-6.col-xl-6.offset-xl-3.offset-lg-3.mt-5.sign-in-container
+            .jumbotron
+                div.user-sign-in 
+                    div.row
+                        .col-md-6.col-lg-6.offset-md-3.offset-lg-3.text-center 
+                            img(src='/images/logo.PNG' width='80' alt='')
+                    hr
+                    h4.text-center Login
+                    div.row
+                        div.col-md-10.col-lg-10.mt-2.offset-md-1.offset-lg-1
+                            != messages('message', locals)
+                    form(method='POST', action=`${server_url}/login`)
+                        #form-group 
+                            label Email Address
+                            input.form-control(name='username', type='email' value=emailAddress placeholder='Enter your email address' required)
+                        #form-group 
+                            label Password
+                            input.form-control(name='password', type='password' placeholder='Enter your password' required)
+                        br
+                        input.btn.btn-primary.btn-block(type='submit',value='Login')
+                        a.btn.btn-secondary.btn-block(href='/users/register') Register
+                        p.lead
+                            | Forgot password?
+                            a(href=`${server_url}/users/forgot_password`)  Click  here
